@@ -464,6 +464,147 @@ html, body {
   padding-bottom: 20px;
 }
 
+/* ---- Header nav (multiple buttons) ---- */
+.header-nav {
+  display: flex;
+  gap: 8px;
+}
+
+/* ---- Dashboard ---- */
+.dashboard {
+  padding-bottom: 40px;
+}
+
+.db-summary {
+  display: flex;
+  justify-content: space-around;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+.db-summary-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.db-summary-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--gray-mid);
+}
+
+.db-summary-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--gray-dark);
+}
+
+.range-chip {
+  background: var(--green);
+  color: var(--white);
+  border-radius: 20px;
+  padding: 1px 10px;
+  font-size: 0.95rem;
+}
+
+.db-legend {
+  font-size: 0.78rem;
+  color: var(--gray-mid);
+  padding: 2px 14px 8px;
+}
+
+.legend-you {
+  font-weight: 700;
+  color: var(--gray-dark);
+}
+
+.legend-good { color: var(--green); font-weight: 600; }
+.legend-bad  { color: var(--red);   font-weight: 600; }
+
+/* Scrollable table wrapper — sticky first column */
+.db-table-wrap {
+  overflow-x: auto;
+  margin: 0 12px 12px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.db-table {
+  width: 100%;
+  min-width: 560px;
+  border-collapse: collapse;
+  background: var(--white);
+  font-size: 0.82rem;
+}
+
+.db-table thead th {
+  padding: 8px 6px;
+  background: var(--white);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--gray-mid);
+  border-bottom: 2px solid var(--gray-lt);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+}
+
+.db-table tbody tr:nth-child(even) {
+  background: #fafafa;
+}
+
+.db-table td, .db-table th {
+  padding: 8px 6px;
+  text-align: center;
+  border-bottom: 1px solid var(--gray-lt);
+}
+
+/* Stat name column — wider, left-aligned, sticky */
+.db-col-stat {
+  text-align: left !important;
+  min-width: 130px;
+  font-weight: 500;
+  color: var(--gray-dark);
+  position: sticky;
+  left: 0;
+  background: inherit;
+  z-index: 1;
+  padding-left: 10px !important;
+}
+
+/* YOU column */
+.db-col-you {
+  font-weight: 700;
+  color: var(--gray-dark);
+  background: #f0f4f0;
+  min-width: 52px;
+}
+
+/* Colour coding the YOU column */
+.db-col-you.good { color: var(--green); }
+.db-col-you.bad  { color: var(--red);   }
+
+/* Highlighted benchmark column matching player's range */
+.db-col-range.your-range {
+  background: var(--green-bg);
+  font-weight: 600;
+  color: var(--green);
+}
+
+.db-col-range {
+  min-width: 52px;
+  color: var(--gray-mid);
+}
+
+/* Section spacing */
+.db-section {
+  margin-bottom: 4px;
+}
+
 /* ---- Responsive touch targets ---- */
 @media (max-width: 400px) {
   .toggle-btn {

@@ -3,14 +3,16 @@ import RoundSetup from './components/RoundSetup.jsx'
 import HoleEntry from './components/HoleEntry.jsx'
 import RoundSummary from './components/RoundSummary.jsx'
 import RoundHistory from './components/RoundHistory.jsx'
+import Dashboard from './components/Dashboard.jsx'
 import { saveRound } from './utils/storage.js'
 
 // Top-level view states
-// 'setup'   → new round setup screen
-// 'holes'   → hole-by-hole entry
-// 'summary' → post-round summary
-// 'history' → past rounds list
-// 'view'    → view a past round's summary
+// 'setup'     → new round setup screen
+// 'holes'     → hole-by-hole entry
+// 'summary'   → post-round summary
+// 'history'   → past rounds list
+// 'view'      → view a past round's summary
+// 'dashboard' → stats dashboard
 
 export default function App() {
   const [view, setView] = useState('setup')
@@ -61,13 +63,17 @@ export default function App() {
     setView('history')
   }
 
+  function handleViewDashboard() {
+    setView('dashboard')
+  }
+
   function handleViewRound(round) {
     setViewingRound(round)
     setView('view')
   }
 
   if (view === 'setup') {
-    return <RoundSetup onStart={handleStart} onViewHistory={handleViewHistory} />
+    return <RoundSetup onStart={handleStart} onViewHistory={handleViewHistory} onViewDashboard={handleViewDashboard} />
   }
 
   if (view === 'holes' && activeRound) {
@@ -114,6 +120,10 @@ export default function App() {
         onViewHistory={handleViewHistory}
       />
     )
+  }
+
+  if (view === 'dashboard') {
+    return <Dashboard onBack={() => setView('setup')} />
   }
 
   return null
