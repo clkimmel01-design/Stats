@@ -1,4 +1,5 @@
-import { getRounds, deleteRound } from '../utils/storage.js'
+import { useAuth } from '../context/AuthContext.jsx'
+import { deleteRoundFS } from '../utils/firestoreRounds.js'
 import { summarizeRoundSG } from '../utils/sgCalculator.js'
 
 function fmt(val) {
@@ -6,16 +7,14 @@ function fmt(val) {
   return (val >= 0 ? '+' : '') + val.toFixed(2)
 }
 
-export default function RoundHistory({ onBack, onViewRound }) {
-  const rounds = getRounds().sort((a, b) => b.date.localeCompare(a.date))
+export default function RoundHistory({ rounds, loading, onBack, onViewRound, onRoundsChange }) {
+  const { user, logOut } = useAuth()
 
-  function handleDelete(id, e) {
+  async function handleDelete(id, e) {
     e.stopPropagation()
-    if (window.confirm('Delete this round?')) {
-      deleteRound(id)
-      // Force re-render by reloading — simple for Phase 1
-      window.location.reload()
-    }
+    if (!window.confirm('Delete this round?')) return
+    await deleteRoundFS(id)
+    onRoundsChange()
   }
 
   return (
@@ -23,17 +22,26 @@ export default function RoundHistory({ onBack, onViewRound }) {
       <div className="app-header">
         <button type="button" className="btn-text" onClick={onBack}>← Back</button>
         <h1>History</h1>
-        <span />
+        <button type="button" className="btn-text" onClick={logOut}>Sign out</button>
       </div>
 
-      {rounds.length === 0 ? (
+      {user && (
+        <div className="user-bar">
+          <img src={user.photoURL} alt="" className="user-avatar" />
+          <span className="user-name">{user.displayName}</span>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="loading-screen"><div className="loading-spinner" /></div>
+      ) : rounds.length === 0 ? (
         <div className="empty-state">No rounds yet. Start a new round to begin tracking.</div>
       ) : (
         rounds.map(round => {
-          const sg = summarizeRoundSG(round.holes)
-          const totalScore = round.holes.reduce((sum, h) => sum + (h.score || 0), 0)
-          const totalPar = round.holes.reduce((sum, h) => sum + (h.par || 0), 0)
-          const diff = totalScore - totalPar
+          const sg         = summarizeRoundSG(round.holes)
+          const totalScore = round.holes.reduce((s, h) => s + (h.score || 0), 0)
+          const totalPar   = round.holes.reduce((s, h) => s + (h.par   || 0), 0)
+          const diff       = totalScore - totalPar
           return (
             <div
               key={round.id}
@@ -43,7 +51,7 @@ export default function RoundHistory({ onBack, onViewRound }) {
               <div className="history-row">
                 <div>
                   <div className="history-course">{round.courseName}</div>
-                  <div className="history-date">{round.date} {round.tees && `· ${round.tees}`}</div>
+                  <div className="history-date">{round.date}{round.tees ? ` · ${round.tees}` : ''}</div>
                 </div>
                 <div className="history-score">
                   {totalScore} <span className="to-par">{diff >= 0 ? '+' : ''}{diff}</span>

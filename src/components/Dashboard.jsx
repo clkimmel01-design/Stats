@@ -1,4 +1,3 @@
-import { getRounds } from '../utils/storage.js'
 import { computeStats } from '../utils/statsEngine.js'
 import { BENCHMARKS, DASHBOARD_SECTIONS, SCORING_RANGES } from '../data/benchmarks.js'
 
@@ -41,9 +40,8 @@ function compareToRange(playerVal, benchVal, key) {
 
 // ── component ─────────────────────────────────────────────────────────────
 
-export default function Dashboard({ onBack }) {
-  const rounds = getRounds()
-  const stats  = computeStats(rounds)
+export default function Dashboard({ rounds = [], loading = false, onBack }) {
+  const stats = computeStats(rounds)
 
   const playerRange = stats?.playerRange || null
 
@@ -55,7 +53,9 @@ export default function Dashboard({ onBack }) {
         <span />
       </div>
 
-      {!stats ? (
+      {loading ? (
+        <div className="loading-screen"><div className="loading-spinner" /></div>
+      ) : !stats ? (
         <div className="empty-state">
           No rounds yet. Complete at least one round to see your stats.
         </div>
