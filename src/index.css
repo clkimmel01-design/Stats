@@ -1,0 +1,477 @@
+/* =========================================
+   Stats — Mobile-first global styles
+   ========================================= */
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --green:     #2e7d32;
+  --green-lt:  #4caf50;
+  --green-bg:  #e8f5e9;
+  --red:       #c62828;
+  --red-bg:    #ffebee;
+  --blue:      #1565c0;
+  --gray-dark: #212121;
+  --gray-mid:  #757575;
+  --gray-lt:   #e0e0e0;
+  --bg:        #f5f5f5;
+  --white:     #ffffff;
+  --radius:    10px;
+  --shadow:    0 1px 4px rgba(0,0,0,0.12);
+  --font:      -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+html, body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--gray-dark);
+  font-size: 16px;
+  line-height: 1.5;
+  min-height: 100dvh;
+}
+
+#root {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 0 80px;
+}
+
+/* ---- App header ---- */
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px;
+}
+
+.app-header h1 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--green);
+}
+
+/* ---- Cards ---- */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 16px;
+  margin: 0 12px 12px;
+}
+
+.card h2 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 14px;
+  color: var(--green);
+}
+
+.card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: var(--gray-dark);
+  border-bottom: 1px solid var(--gray-lt);
+  padding-bottom: 6px;
+}
+
+/* ---- Field rows ---- */
+.field-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.field-row label {
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--gray-mid);
+  white-space: nowrap;
+  min-width: 100px;
+}
+
+.field-row select,
+.field-row input[type="text"],
+.field-row input[type="number"] {
+  flex: 1;
+  padding: 10px 12px;
+  font-size: 1rem;
+  border: 1.5px solid var(--gray-lt);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--gray-dark);
+  appearance: auto;
+  min-width: 0;
+}
+
+.field-row select:focus,
+.field-row input:focus {
+  outline: none;
+  border-color: var(--green-lt);
+}
+
+/* ---- Toggle buttons ---- */
+.toggle-row {
+  display: flex;
+  gap: 6px;
+  flex: 1;
+}
+
+.toggle-row.wrap {
+  flex-wrap: wrap;
+}
+
+.toggle-btn {
+  flex: 1;
+  padding: 9px 6px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  border: 1.5px solid var(--gray-lt);
+  border-radius: 8px;
+  background: var(--white);
+  color: var(--gray-mid);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.toggle-btn.active {
+  background: var(--green);
+  border-color: var(--green);
+  color: var(--white);
+}
+
+.toggle-btn:active {
+  transform: scale(0.97);
+}
+
+/* ---- Section labels ---- */
+.section-label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--gray-mid);
+  padding: 6px 16px 4px;
+}
+
+/* ---- Shot entry inner ---- */
+.shot-entry {
+  /* inside .card */
+}
+
+.shot-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.shot-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--green);
+}
+
+.btn-remove {
+  font-size: 0.8rem;
+  color: var(--red);
+  background: none;
+  border: 1px solid var(--red);
+  border-radius: 6px;
+  padding: 4px 10px;
+  cursor: pointer;
+}
+
+/* ---- Hole header ---- */
+.hole-header {
+  padding: 12px 16px 4px;
+}
+
+.hole-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hole-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.btn-nav {
+  font-size: 1.4rem;
+  background: none;
+  border: none;
+  color: var(--green);
+  padding: 4px 12px;
+  cursor: pointer;
+}
+
+.btn-nav:disabled {
+  color: var(--gray-lt);
+  cursor: default;
+}
+
+/* ---- Add shot buttons ---- */
+.btn-add {
+  display: block;
+  width: calc(100% - 24px);
+  margin: 0 12px 12px;
+  padding: 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--green);
+  background: var(--green-bg);
+  border: 1.5px dashed var(--green-lt);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-add:active {
+  background: #c8e6c9;
+}
+
+/* ---- Hole footer nav ---- */
+.hole-footer {
+  display: flex;
+  gap: 10px;
+  padding: 12px 12px 0;
+}
+
+/* ---- Primary / Secondary / Finish buttons ---- */
+.btn-primary {
+  flex: 1;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--green);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary.full-width {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-primary:disabled {
+  background: var(--gray-lt);
+  color: var(--gray-mid);
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  flex: 1;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 600;
+  background: var(--white);
+  color: var(--green);
+  border: 1.5px solid var(--green);
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-finish {
+  flex: 1;
+  padding: 14px;
+  font-size: 1rem;
+  font-weight: 700;
+  background: var(--blue);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-text {
+  background: none;
+  border: none;
+  color: var(--green);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px;
+}
+
+/* ---- Summary ---- */
+.summary-card {
+  text-align: center;
+  padding: 20px;
+}
+
+.summary-course {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.summary-date {
+  font-size: 0.85rem;
+  color: var(--gray-mid);
+  margin-bottom: 8px;
+}
+
+.summary-score {
+  font-size: 2.4rem;
+  font-weight: 700;
+}
+
+.to-par {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--gray-mid);
+}
+
+.sg-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--gray-lt);
+  font-size: 0.95rem;
+}
+
+.sg-row:last-child {
+  border-bottom: none;
+}
+
+.sg-total {
+  font-weight: 700;
+  font-size: 1rem;
+  padding-top: 10px;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--gray-lt);
+  font-size: 0.95rem;
+}
+
+.stat-row:last-child {
+  border-bottom: none;
+}
+
+.positive { color: var(--green); font-weight: 600; }
+.negative { color: var(--red); font-weight: 600; }
+
+/* ---- Hole table ---- */
+.hole-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.hole-table th {
+  text-align: center;
+  padding: 6px 4px;
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  border-bottom: 2px solid var(--gray-lt);
+}
+
+.hole-table td {
+  text-align: center;
+  padding: 7px 4px;
+  border-bottom: 1px solid var(--gray-lt);
+}
+
+.birdie td { color: var(--green); font-weight: 600; }
+.bogey td:nth-child(4) { color: var(--red); }
+.double td:nth-child(4) { color: var(--red); font-weight: 700; }
+
+.summary-actions {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+}
+
+/* ---- History ---- */
+.history-card {
+  cursor: pointer;
+  position: relative;
+}
+
+.history-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 8px;
+}
+
+.history-course {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.history-date {
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+}
+
+.history-score {
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.history-sg {
+  display: flex;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--gray-mid);
+  margin-bottom: 8px;
+}
+
+.btn-delete {
+  font-size: 0.75rem;
+  color: var(--red);
+  background: none;
+  border: 1px solid var(--red);
+  border-radius: 6px;
+  padding: 3px 8px;
+  cursor: pointer;
+}
+
+/* ---- Empty state ---- */
+.empty-state {
+  text-align: center;
+  color: var(--gray-mid);
+  padding: 40px 24px;
+  font-size: 0.95rem;
+}
+
+/* ---- Round setup ---- */
+.round-setup {
+  min-height: 100dvh;
+}
+
+/* ---- Hole entry ---- */
+.hole-entry {
+  padding-bottom: 20px;
+}
+
+/* ---- Responsive touch targets ---- */
+@media (max-width: 400px) {
+  .toggle-btn {
+    font-size: 0.82rem;
+    padding: 9px 4px;
+  }
+  .field-row label {
+    min-width: 85px;
+    font-size: 0.85rem;
+  }
+}
