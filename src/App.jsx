@@ -6,6 +6,7 @@ import HoleEntry from './components/HoleEntry.jsx'
 import RoundSummary from './components/RoundSummary.jsx'
 import RoundHistory from './components/RoundHistory.jsx'
 import Dashboard from './components/Dashboard.jsx'
+import Trends from './components/Trends.jsx'
 import { saveRoundFS, getRoundsFS, migrateLocalRounds } from './utils/firestoreRounds.js'
 import { getRounds as getLocalRounds } from './utils/storage.js'
 
@@ -126,6 +127,7 @@ export default function App() {
         onStart={handleStart}
         onViewHistory={() => setView('history')}
         onViewDashboard={() => setView('dashboard')}
+        onViewTrends={() => setView('trends')}
       />
     )
   }
@@ -182,6 +184,16 @@ export default function App() {
   if (view === 'dashboard') {
     return (
       <Dashboard
+        rounds={rounds}
+        loading={roundsLoading}
+        onBack={() => setView('setup')}
+      />
+    )
+  }
+
+  if (view === 'trends') {
+    return (
+      <Trends
         rounds={rounds}
         loading={roundsLoading}
         onBack={() => setView('setup')}

@@ -6,7 +6,7 @@ import { createRound, createHole } from '../utils/storage.js'
 // Props:
 //   onStart(round): called with a new round object ready for hole entry
 //   onViewHistory(): navigate to round history list
-export default function RoundSetup({ onStart, onViewHistory, onViewDashboard }) {
+export default function RoundSetup({ onStart, onViewHistory, onViewDashboard, onViewTrends }) {
   const [courseName, setCourseName] = useState('')
   const [tees, setTees] = useState('')
   const [numHoles, setNumHoles] = useState(18)
@@ -27,6 +27,7 @@ export default function RoundSetup({ onStart, onViewHistory, onViewDashboard }) 
         <h1>Stats</h1>
         <div className="header-nav">
           <button type="button" className="btn-text" onClick={onViewDashboard}>Dashboard</button>
+          <button type="button" className="btn-text" onClick={onViewTrends}>Trends</button>
           <button type="button" className="btn-text" onClick={onViewHistory}>History</button>
         </div>
       </div>

@@ -730,3 +730,48 @@ html, body {
     font-size: 0.85rem;
   }
 }
+
+/* ── Trends ──────────────────────────────────────────────────────────────── */
+
+.trends-card {
+  padding: 16px 8px 12px;
+  margin-bottom: 12px;
+}
+
+.trends-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--gray-dark);
+  margin-bottom: 12px;
+  padding-left: 8px;
+}
+
+.trends-note {
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--gray-mid);
+  padding: 4px 16px 20px;
+}
+
+.chart-tooltip {
+  background: #1e293b;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 8px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  min-width: 130px;
+}
+
+.chart-tooltip-label {
+  color: #94a3b8;
+  font-size: 0.75rem;
+  margin-bottom: 4px;
+}
+
+.chart-tooltip-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  line-height: 1.6;
+  font-weight: 500;
+}
