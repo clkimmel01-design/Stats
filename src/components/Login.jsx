@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useAuth } from '../context/AuthContext.jsx'
 
 export default function Login() {
-  const { signInWithGoogle } = useAuth()
+  const { signInWithGoogle, authError } = useAuth()
   const [error, setError] = useState('')
 
   async function handleSignIn() {
@@ -10,9 +10,11 @@ export default function Login() {
     try {
       await signInWithGoogle()
     } catch (e) {
-      setError(e.code ? `${e.code}` : 'Sign-in failed. Please try again.')
+      setError(e.code || e.message || 'Sign-in failed. Please try again.')
     }
   }
+
+  const displayError = authError || error
 
   return (
     <div className="login-screen">
@@ -30,7 +32,7 @@ export default function Login() {
           Sign in with Google
         </button>
 
-        {error && <p className="login-error">{error}</p>}
+        {displayError && <p className="login-error">{displayError}</p>}
 
         <p className="login-note">
           Your rounds are saved to your account and sync across devices.
