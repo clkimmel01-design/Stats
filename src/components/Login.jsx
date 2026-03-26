@@ -10,7 +10,7 @@ export default function Login() {
     try {
       await signInWithGoogle()
     } catch (e) {
-      setError('Sign-in failed. Please try again.')
+      setError(e.code ? `${e.code}` : 'Sign-in failed. Please try again.')
     }
   }
 
