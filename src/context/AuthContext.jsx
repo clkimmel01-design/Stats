@@ -1,8 +1,13 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
+import { onAuthStateChanged, signInWithPopup, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase.js'
 
 const AuthContext = createContext(null)
+
+function isStandalone() {
+  return window.matchMedia('(display-mode: standalone)').matches ||
+    window.navigator.standalone === true
+}
 
 // Wraps the whole app. Any component can call useAuth() to get the current user.
 export function AuthProvider({ children }) {
@@ -10,6 +15,9 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Handle redirect result when returning from Google sign-in
+    getRedirectResult(auth).catch(() => {})
+
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser)
       setLoading(false)
@@ -18,7 +26,11 @@ export function AuthProvider({ children }) {
   }, [])
 
   async function signInWithGoogle() {
-    await signInWithPopup(auth, googleProvider)
+    if (isStandalone()) {
+      await signInWithRedirect(auth, googleProvider)
+    } else {
+      await signInWithPopup(auth, googleProvider)
+    }
   }
 
   async function logOut() {
