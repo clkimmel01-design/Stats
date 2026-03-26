@@ -67,9 +67,12 @@ export function createShot({ shotNumber = 1 } = {}) {
     category: null,        // assigned by SG calculator
     club: '',
     startLie: '',
-    startDistanceBin: '',
+    startYards: '',        // raw yards input (approach / ATG shots)
+    startFeet: '',         // raw feet input (putts)
+    startDistanceBin: '',  // auto-derived from startYards or startFeet
     endLie: '',
-    endDistanceBin: '',
+    endFeet: '',           // raw feet to pin when shot ends on Green
+    endDistanceBin: '',    // auto-derived from endFeet
     intendedTargetBin: '',
     committed: true,
     puttResult: '',        // 'made' | 'missed'

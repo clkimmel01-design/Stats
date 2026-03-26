@@ -1,26 +1,16 @@
-import { useState } from 'react'
 import ShotEntry from './ShotEntry.jsx'
 import PuttEntry from './PuttEntry.jsx'
-import { TEE_SHOT_CLUBS, TEE_SHOT_END_LIES } from '../data/constants.js'
+import { TEE_SHOT_CLUBS, TEE_SHOT_END_LIES, yardsToDistanceBin, feetToPuttBin } from '../data/constants.js'
 import { createShot } from '../utils/storage.js'
 import { calculateShotSG, getSGCategory } from '../utils/sgCalculator.js'
 import { LIE_TO_KEY } from '../data/constants.js'
 
-// HoleEntry is the main screen for entering all shots on one hole.
-// Props:
-//   hole: hole object
-//   onChange(updatedHole): called whenever hole data changes
-//   onNext(): move to next hole
-//   onPrev(): move to previous hole
-//   isFirst: bool
-//   isLast: bool
-//   onFinish(): called when user taps Finish Round on last hole
 export default function HoleEntry({ hole, onChange, onNext, onPrev, isFirst, isLast, onFinish }) {
   function updateHole(field, value) {
     onChange({ ...hole, [field]: value })
   }
 
-  // Update tee shot fields
+  // ── Tee shot ────────────────────────────────────────────────────────────
   function updateTeeShot(field, value) {
     const teeShot = { ...(hole.shots[0] || createShot({ shotNumber: 1 })), [field]: value }
     teeShot.startLie = 'Tee'
@@ -33,82 +23,101 @@ export default function HoleEntry({ hole, onChange, onNext, onPrev, isFirst, isL
     return hole.shots[0] || { club: '', endLie: '' }
   }
 
-  // Non-putting, non-tee shots (shots 2+, approach/ATG)
+  // ── Approach / ATG shots (shot 2+, non-putting) ─────────────────────────
   const approachShots = hole.shots.filter(s => s.category !== 'putting' && s.shotNumber > 1)
-  const putts = hole.shots.filter(s => s.category === 'putting')
+  const putts         = hole.shots.filter(s => s.category === 'putting')
 
   function addApproachShot() {
-    const shotNumber = hole.shots.filter(s => s.category !== 'putting').length + 1
+    // Always shot 2+ — count existing approach shots and add 1
+    const shotNumber = approachShots.length + 2
+
+    // Auto-fill startLie from the last non-putt shot's endLie
+    const lastNonPutt = [...hole.shots.filter(s => s.category !== 'putting')].pop()
     const newShot = createShot({ shotNumber })
-    const newShots = [...hole.shots, newShot]
-    onChange({ ...hole, shots: newShots })
+    if (lastNonPutt?.endLie && lastNonPutt.endLie !== 'Holed') {
+      newShot.startLie = lastNonPutt.endLie
+    }
+
+    onChange({ ...hole, shots: [...hole.shots, newShot] })
   }
 
   function updateApproachShot(index, updatedShot) {
+    // Derive distance bin from raw yards input
+    if (updatedShot.startYards) {
+      updatedShot.startDistanceBin = yardsToDistanceBin(updatedShot.startYards)
+    }
+    // Derive end distance bin from raw feet when ending on green
+    if (updatedShot.endFeet && updatedShot.endLie === 'Green') {
+      updatedShot.endDistanceBin = feetToPuttBin(updatedShot.endFeet)
+    }
+
     // Recalculate SG
-    const lieKey = LIE_TO_KEY[updatedShot.startLie] || updatedShot.startLie?.toLowerCase()
-    const endLieKey = LIE_TO_KEY[updatedShot.endLie] || updatedShot.endLie?.toLowerCase()
-    const isHoled = updatedShot.endLie === 'Holed'
-    const sg = calculateShotSG({
-      startLie: lieKey,
+    const lieKey    = LIE_TO_KEY[updatedShot.startLie] || updatedShot.startLie?.toLowerCase()
+    const endLieKey = LIE_TO_KEY[updatedShot.endLie]   || updatedShot.endLie?.toLowerCase()
+    const isHoled   = updatedShot.endLie === 'Holed'
+    updatedShot.sgCalculated = calculateShotSG({
+      startLie:        lieKey,
       startDistanceBin: updatedShot.startDistanceBin,
-      endLie: isHoled ? 'holed' : endLieKey,
-      endDistanceBin: updatedShot.endDistanceBin,
+      endLie:          isHoled ? 'holed' : endLieKey,
+      endDistanceBin:  updatedShot.endDistanceBin,
       isHoled,
     })
-    updatedShot.sgCalculated = sg
     updatedShot.category = getSGCategory(hole.par, updatedShot.shotNumber, updatedShot.startLie, updatedShot.startDistanceBin)
 
-    const allNonPutts = hole.shots.filter(s => s.category !== 'putting')
-    allNonPutts[index] = updatedShot
-    const shots = [...allNonPutts, ...putts]
-    onChange({ ...hole, shots })
+    // FIX: rebuild using approachShots array directly — do NOT use allNonPutts[index]
+    // because index is relative to approachShots (shots 2+), not hole.shots
+    const teeArr = hole.shots.filter(s => s.shotNumber === 1)
+    const newApproach = [...approachShots]
+    newApproach[index] = updatedShot
+    onChange({ ...hole, shots: [...teeArr, ...newApproach, ...putts] })
   }
 
   function removeApproachShot(index) {
-    const allNonPutts = hole.shots.filter(s => s.category !== 'putting')
-    allNonPutts.splice(index, 1)
-    // Renumber
-    allNonPutts.forEach((s, i) => { s.shotNumber = i + 1 })
-    const shots = [...allNonPutts, ...putts]
-    onChange({ ...hole, shots })
+    // FIX: same as above — use approachShots directly so we never touch the tee shot
+    const teeArr = hole.shots.filter(s => s.shotNumber === 1)
+    const newApproach = [...approachShots]
+    newApproach.splice(index, 1)
+    newApproach.forEach((s, i) => { s.shotNumber = i + 2 })
+    onChange({ ...hole, shots: [...teeArr, ...newApproach, ...putts] })
   }
 
+  // ── Putts ────────────────────────────────────────────────────────────────
+  // Non-putt count used to compute each putt's absolute shot number for display
+  const nonPuttCount = Math.max(1, hole.shots.filter(s => s.category !== 'putting').length)
+
   function addPutt() {
-    const puttNumber = putts.length + 1
-    const newPutt = createShot({ shotNumber: puttNumber })
+    const newPutt = createShot({ shotNumber: nonPuttCount + putts.length + 1 })
     newPutt.category = 'putting'
     newPutt.startLie = 'Green'
-    const shots = [...hole.shots.filter(s => s.category !== 'putting'), newPutt]
-    onChange({ ...hole, shots })
+    onChange({ ...hole, shots: [...hole.shots.filter(s => s.category !== 'putting'), newPutt] })
   }
 
   function updatePutt(index, updatedPutt) {
+    // Derive bin from raw feet input
+    if (updatedPutt.startFeet) {
+      updatedPutt.startDistanceBin = feetToPuttBin(updatedPutt.startFeet)
+    }
     const isHoled = updatedPutt.puttResult === 'made'
-    const sg = calculateShotSG({
-      startLie: 'green',
-      startDistanceBin: updatedPutt.startDistanceBin,
-      endLie: isHoled ? 'holed' : 'green',
-      endDistanceBin: isHoled ? null : '<4ft',
+    updatedPutt.sgCalculated = calculateShotSG({
+      startLie:         'green',
+      startDistanceBin:  updatedPutt.startDistanceBin,
+      endLie:           isHoled ? 'holed' : 'green',
+      endDistanceBin:   isHoled ? null : '<4ft',
       isHoled,
     })
-    updatedPutt.sgCalculated = sg
     updatedPutt.category = 'putting'
 
     const newPutts = [...putts]
     newPutts[index] = updatedPutt
-    // Renumber putts
-    newPutts.forEach((p, i) => { p.shotNumber = i + 1 })
-    const shots = [...hole.shots.filter(s => s.category !== 'putting'), ...newPutts]
-    onChange({ ...hole, shots })
+    newPutts.forEach((p, i) => { p.shotNumber = nonPuttCount + i + 1 })
+    onChange({ ...hole, shots: [...hole.shots.filter(s => s.category !== 'putting'), ...newPutts] })
   }
 
   function removePutt(index) {
     const newPutts = [...putts]
     newPutts.splice(index, 1)
-    newPutts.forEach((p, i) => { p.shotNumber = i + 1 })
-    const shots = [...hole.shots.filter(s => s.category !== 'putting'), ...newPutts]
-    onChange({ ...hole, shots })
+    newPutts.forEach((p, i) => { p.shotNumber = nonPuttCount + i + 1 })
+    onChange({ ...hole, shots: [...hole.shots.filter(s => s.category !== 'putting'), ...newPutts] })
   }
 
   const teeShot = getTeeShot()
@@ -203,7 +212,7 @@ export default function HoleEntry({ hole, onChange, onNext, onPrev, isFirst, isL
         <>
           <div className="section-label">Approach / Around the Green</div>
           {approachShots.map((shot, i) => (
-            <div className="card" key={shot.shotNumber}>
+            <div className="card" key={i}>
               <ShotEntry
                 shot={shot}
                 onChange={updated => updateApproachShot(i, updated)}
@@ -223,9 +232,10 @@ export default function HoleEntry({ hole, onChange, onNext, onPrev, isFirst, isL
       {putts.length > 0 && (
         <>
           {putts.map((putt, i) => (
-            <div className="card" key={`putt-${i}`}>
+            <div className="card" key={i}>
               <PuttEntry
                 putt={putt}
+                displayNumber={nonPuttCount + i + 1}
                 onChange={updated => updatePutt(i, updated)}
                 onRemove={() => removePutt(i)}
               />

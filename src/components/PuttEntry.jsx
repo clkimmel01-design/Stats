@@ -1,11 +1,6 @@
-import { ALL_PUTT_BINS, MISS_DIRECTIONS } from '../data/constants.js'
+import { MISS_DIRECTIONS } from '../data/constants.js'
 
-// PuttEntry handles a single putt within the putting section.
-// Props:
-//   putt: shot object (category='putting')
-//   onChange(updatedPutt)
-//   onRemove()
-export default function PuttEntry({ putt, onChange, onRemove }) {
+export default function PuttEntry({ putt, onChange, onRemove, displayNumber }) {
   function update(field, value) {
     onChange({ ...putt, [field]: value })
   }
@@ -13,16 +8,19 @@ export default function PuttEntry({ putt, onChange, onRemove }) {
   return (
     <div className="shot-entry putt-entry">
       <div className="shot-header">
-        <span className="shot-label">Putt {putt.shotNumber}</span>
+        <span className="shot-label">Shot {displayNumber}</span>
         <button className="btn-remove" onClick={onRemove} type="button">Remove</button>
       </div>
 
       <div className="field-row">
-        <label>Distance</label>
-        <select value={putt.startDistanceBin} onChange={e => update('startDistanceBin', e.target.value)}>
-          <option value="">Select distance</option>
-          {ALL_PUTT_BINS.map(b => <option key={b} value={b}>{b}</option>)}
-        </select>
+        <label>Distance (ft)</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          value={putt.startFeet || ''}
+          onChange={e => update('startFeet', e.target.value)}
+          placeholder="e.g. 12"
+        />
       </div>
 
       <div className="field-row">

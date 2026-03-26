@@ -1,16 +1,9 @@
-import { CLUBS, APPROACH_DISTANCE_BINS, ATG_DISTANCE_BINS, SHOT_END_LIES } from '../data/constants.js'
+import { CLUBS, SHOT_END_LIES } from '../data/constants.js'
 
-// ShotEntry handles shots 2+ (approach and around the green shots, not putting).
-// Props:
-//   shot: shot object
-//   onChange(updatedShot): callback
-//   onRemove(): callback
 export default function ShotEntry({ shot, onChange, onRemove }) {
   function update(field, value) {
     onChange({ ...shot, [field]: value })
   }
-
-  const allDistanceBins = [...ATG_DISTANCE_BINS, ...APPROACH_DISTANCE_BINS]
 
   return (
     <div className="shot-entry">
@@ -28,16 +21,14 @@ export default function ShotEntry({ shot, onChange, onRemove }) {
       </div>
 
       <div className="field-row">
-        <label>Distance</label>
-        <select value={shot.startDistanceBin} onChange={e => update('startDistanceBin', e.target.value)}>
-          <option value="">Select distance</option>
-          <optgroup label="Around the Green (under 50 yds)">
-            {ATG_DISTANCE_BINS.map(b => <option key={b} value={b}>{b} yds</option>)}
-          </optgroup>
-          <optgroup label="Approach (50+ yds)">
-            {APPROACH_DISTANCE_BINS.map(b => <option key={b} value={b}>{b} yds</option>)}
-          </optgroup>
-        </select>
+        <label>Distance (yds)</label>
+        <input
+          type="number"
+          inputMode="numeric"
+          value={shot.startYards || ''}
+          onChange={e => update('startYards', e.target.value)}
+          placeholder="e.g. 150"
+        />
       </div>
 
       <div className="field-row">
@@ -58,13 +49,14 @@ export default function ShotEntry({ shot, onChange, onRemove }) {
 
       {shot.endLie === 'Green' && (
         <div className="field-row">
-          <label>Distance to pin</label>
-          <select value={shot.endDistanceBin} onChange={e => update('endDistanceBin', e.target.value)}>
-            <option value="">Select distance</option>
-            {['<4ft', '4-8ft', '8-10ft', '10-15ft', '15-20ft', '20-25ft', '25ft+'].map(b => (
-              <option key={b} value={b}>{b}</option>
-            ))}
-          </select>
+          <label>Feet to pin</label>
+          <input
+            type="number"
+            inputMode="numeric"
+            value={shot.endFeet || ''}
+            onChange={e => update('endFeet', e.target.value)}
+            placeholder="e.g. 18"
+          />
         </div>
       )}
 
