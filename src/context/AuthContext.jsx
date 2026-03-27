@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, signInWithRedirect, getRedirectResult, signOut } from 'firebase/auth'
+import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
 import { auth, googleProvider } from '../firebase.js'
 import { saveUserFS } from '../utils/firestoreRounds.js'
 
@@ -12,11 +12,6 @@ export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState('')
 
   useEffect(() => {
-    // Pick up the result when Google redirects back to the app
-    getRedirectResult(auth).catch(e => {
-      setAuthError(e.code || e.message || 'Sign-in failed')
-    })
-
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser)
       setLoading(false)
@@ -30,7 +25,7 @@ export function AuthProvider({ children }) {
   async function signInWithGoogle() {
     setAuthError('')
     try {
-      await signInWithRedirect(auth, googleProvider)
+      await signInWithPopup(auth, googleProvider)
     } catch (e) {
       setAuthError(e.code || e.message || 'Sign-in failed')
     }
