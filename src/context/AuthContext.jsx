@@ -1,8 +1,17 @@
 import { createContext, useContext, useEffect, useState } from 'react'
-import { onAuthStateChanged, signInWithPopup, signOut } from 'firebase/auth'
+import {
+  onAuthStateChanged, signInWithPopup, signInWithRedirect,
+  getRedirectResult, signOut,
+} from 'firebase/auth'
 import { auth, googleProvider } from '../firebase.js'
+import { saveUserFS } from '../utils/firestoreRounds.js'
 
 const AuthContext = createContext(null)
+
+function isSafari() {
+  const ua = navigator.userAgent
+  return /Safari/.test(ua) && !/Chrome/.test(ua)
+}
 
 // Wraps the whole app. Any component can call useAuth() to get the current user.
 export function AuthProvider({ children }) {
@@ -11,9 +20,15 @@ export function AuthProvider({ children }) {
   const [authError, setAuthError] = useState('')
 
   useEffect(() => {
+    // Handle redirect result when returning from Google sign-in on Safari
+    getRedirectResult(auth).catch(() => {})
+
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser)
       setLoading(false)
+      if (firebaseUser) {
+        saveUserFS(firebaseUser).catch(() => {}) // best-effort — don't block auth
+      }
     })
     return unsub
   }, [])
@@ -21,7 +36,11 @@ export function AuthProvider({ children }) {
   async function signInWithGoogle() {
     setAuthError('')
     try {
-      await signInWithPopup(auth, googleProvider)
+      if (isSafari()) {
+        await signInWithRedirect(auth, googleProvider)
+      } else {
+        await signInWithPopup(auth, googleProvider)
+      }
     } catch (e) {
       setAuthError(e.code || e.message || 'Sign-in failed')
     }
